@@ -1,0 +1,126 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Subjects | EduTrack{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+    <p class="page-eyebrow">ACADEMIC MANAGEMENT</p>
+
+    <div class="section-heading">
+        <div>
+            <h1>Subjects</h1>
+
+            <p class="page-description">
+                {% if request.user.role == 'TEACHER' %}
+                    Manage the subjects you teach.
+                {% else %}
+                    View your enrolled subjects.
+                {% endif %}
+            </p>
+        </div>
+
+        {% if request.user.role == 'TEACHER' %}
+            <a href="{% url 'subjects:subject_create' %}"
+               class="action-button">
+                + Create Subject
+            </a>
+        {% endif %}
+    </div>
+</section>
+
+<form method="GET" class="search-form">
+
+    <input
+        type="search"
+        name="q"
+        value="{{ search_query }}"
+        placeholder="Search subjects..."
+        aria-label="Search subjects"
+    >
+
+    <button type="submit" class="action-button">
+        Search
+    </button>
+
+    {% if search_query %}
+        <a href="{% url 'subjects:subject_list' %}"
+           class="cancel-button">
+            Clear
+        </a>
+    {% endif %}
+
+</form>
+
+<div class="subject-summary">
+    <span class="summary-label">
+        {{ page_obj.paginator.count }} subject{{ page_obj.paginator.count|pluralize }} found
+    </span>
+
+    <strong>{{ page_obj.number }}/{{ page_obj.paginator.num_pages|default:1 }}</strong>
+</div>
+
+{% if subjects %}
+
+    <div class="subject-grid">
+
+        {% for subject in subjects %}
+
+            <article class="subject-card">
+
+                <div class="subject-card-top">
+                    <span class="subject-tag">SUBJECT</span>
+                </div>
+
+                <h2>{{ subject.name }}</h2>
+
+                <p class="subject-description">
+                    {{ subject.description|default:"No description has been added yet."|truncatewords:25 }}
+                </p>
+
+                <div class="subject-meta">
+
+                    {% if request.user.role == 'STUDENT' %}
+                        Teacher:
+                        {{ subject.teacher.get_full_name|default:subject.teacher.username }}
+                    {% else %}
+                        {{ subject.students.count }} enrolled student{{ subject.students.count|pluralize }}
+                    {% endif %}
+
+                </div>
+
+                <a href="{% url 'subjects:subject_detail' subject.pk %}"
+                   class="subject-card-link">
+                    View Subject →
+                </a>
+
+            </article>
+
+        {% endfor %}
+
+    </div>
+
+    {% include 'partials/pagination.html' %}
+
+{% else %}
+
+    <div class="empty-state">
+
+        <h2>No subjects found</h2>
+
+        <p>
+            {% if search_query %}
+                Try a different search term.
+            {% elif request.user.role == 'TEACHER' %}
+                You haven't created any subjects yet.
+            {% else %}
+                You are not enrolled in any subjects yet.
+            {% endif %}
+        </p>
+
+    </div>
+
+{% endif %}
+
+{% endblock %}

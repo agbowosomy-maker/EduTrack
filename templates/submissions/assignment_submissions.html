@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}Assignment Submissions | EduTrack{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-container">
+
+    <div class="page-heading">
+        <p class="dashboard-eyebrow">SUBMISSION MANAGEMENT</p>
+
+        <h1>{{ assignment.title }}</h1>
+
+        <p>{{ assignment.subject.name }}</p>
+    </div>
+
+    <section class="dashboard-section">
+
+        <div class="section-heading">
+            <div>
+                <h2>Student Submissions</h2>
+                <p>Review the work submitted for this assignment.</p>
+            </div>
+
+            <strong>{{ submissions.count }} submissions</strong>
+        </div>
+
+        {% for submission in submissions %}
+
+            <article class="dashboard-list-item">
+
+                <div>
+                    <h3>
+                        <a href="{% url 'submissions:submission_detail' submission.pk %}">
+                            {{ submission.student.get_full_name|default:submission.student.username }}
+                        </a>
+                    </h3>
+
+                    <p>
+                        Submitted:
+                        {{ submission.submitted_at|date:"d M Y, H:i" }}
+                    </p>
+
+                    <p>
+                        Status: {{ submission.get_status_display }}
+                    </p>
+
+                </div>
+
+                <div class="form-actions">
+                    <a
+                        href="{% url 'submissions:submission_detail' submission.pk %}"
+                        class="btn btn-secondary"
+                    >
+                        View Work
+                    </a>
+
+                    <a
+                        href="{% url 'submissions:submission_grade' submission.pk %}"
+                        class="btn btn-primary"
+                    >
+                        Review
+                    </a>
+                </div>
+
+            </article>
+
+        {% empty %}
+
+            <p class="empty-state">
+                No students have submitted this assignment yet.
+            </p>
+
+        {% endfor %}
+
+    </section>
+
+</div>
+
+{% endblock %}

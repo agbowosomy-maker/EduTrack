@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ assignment.title }} | EduTrack{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <p class="page-eyebrow">ASSIGNMENT DETAILS</p>
+
+    <h1>{{ assignment.title }}</h1>
+
+    <p class="page-description">
+        {{ assignment.subject.name }}
+    </p>
+</div>
+
+<div class="detail-card">
+
+    <div class="assignment-card-header">
+        <span class="assignment-subject">
+            {{ assignment.subject.name }}
+        </span>
+
+        {% if assignment.is_published %}
+            <span class="status-badge status-published">
+                Published
+            </span>
+        {% else %}
+            <span class="status-badge status-draft">
+                Draft
+            </span>
+        {% endif %}
+    </div>
+
+    <div class="detail-section">
+        <h2>Instructions</h2>
+
+        <p>
+            {{ assignment.description|linebreaksbr }}
+        </p>
+    </div>
+
+    <div class="detail-section">
+        <h2>Assignment information</h2>
+
+        <div class="detail-row">
+            <span>Subject</span>
+            <strong>{{ assignment.subject.name }}</strong>
+        </div>
+
+        <div class="detail-row">
+            <span>Created by</span>
+            <strong>
+                {{ assignment.created_by.get_full_name|default:assignment.created_by.username }}
+            </strong>
+        </div>
+
+        <div class="detail-row">
+            <span>Due date</span>
+            <strong>{{ assignment.due_date|date:"d M Y, H:i" }}</strong>
+        </div>
+
+        <div class="detail-row">
+            <span>Date created</span>
+            <strong>{{ assignment.created_at|date:"d M Y" }}</strong>
+        </div>
+
+        <div class="detail-row">
+            <span>Last updated</span>
+            <strong>{{ assignment.updated_at|date:"d M Y" }}</strong>
+        </div>
+    </div>
+
+    {% if request.user.role == 'STUDENT' %}
+        {% if assignment.is_published %}
+            <div class="assignment-submission-action">
+
+                {% if student_submission %}
+                    <a href="{% url 'submissions:submission_detail' student_submission.pk %}"
+                       class="action-button">
+                        View My Submission
+                    </a>
+                {% else %}
+                    <a href="{% url 'submissions:submission_create' assignment.pk %}"
+                       class="action-button">
+                        Submit Assignment
+                    </a>
+                {% endif %}
+
+            </div>
+        {% endif %}
+    {% endif %}
+
+    {% if request.user.role == 'TEACHER' and assignment.created_by_id == request.user.id %}
+
+        <div class="assignment-submission-action">
+
+            <a
+                href="{% url 'submissions:assignment_submissions' assignment.pk %}"
+                class="btn btn-primary"
+            >
+                View Student Submissions
+            </a>
+
+        </div>
+
+    {% endif %}
+
+    {% if request.user.role == 'TEACHER' %}
+
+        <div class="detail-actions">
+
+            <a href="{% url 'assignments:assignment_update' assignment.pk %}"
+               class="action-button">
+                Edit Assignment
+            </a>
+
+            <a href="{% url 'assignments:assignment_delete' assignment.pk %}"
+               class="danger-button">
+                Delete Assignment
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+<a href="{% url 'assignments:assignment_list' %}" class="back-link">
+    ← Back to Assignments
+</a>
+
+{% endblock %}

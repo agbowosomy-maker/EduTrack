@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+
+{% block title %}Assignments | EduTrack{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+
+    <p class="page-eyebrow">ACADEMIC MANAGEMENT</p>
+
+    <div class="section-heading">
+
+        <div>
+            <h1>Assignments</h1>
+
+            <p class="page-description">
+                {% if request.user.role == 'TEACHER' %}
+                    Search and manage your assignments.
+                {% else %}
+                    Find assignments from your enrolled subjects.
+                {% endif %}
+            </p>
+        </div>
+
+        {% if request.user.role == 'TEACHER' %}
+            <a href="{% url 'assignments:assignment_create' %}"
+               class="action-button">
+                + Create Assignment
+            </a>
+        {% endif %}
+
+    </div>
+
+</section>
+
+<form method="GET" class="filter-form">
+
+    <input
+        type="search"
+        name="q"
+        value="{{ search_query }}"
+        placeholder="Search assignments..."
+        aria-label="Search assignments"
+    >
+
+    <select name="subject">
+        <option value="">All Subjects</option>
+
+        {% for subject in subjects %}
+            <option
+                value="{{ subject.pk }}"
+                {% if selected_subject == subject.pk|stringformat:"s" %}selected{% endif %}
+            >
+                {{ subject.name }}
+            </option>
+        {% endfor %}
+
+    </select>
+
+    {% if request.user.role == 'TEACHER' %}
+
+        <select name="status">
+
+            <option value="">All Statuses</option>
+
+            <option value="published"
+                {% if publication_status == 'published' %}selected{% endif %}>
+                Published
+            </option>
+
+            <option value="draft"
+                {% if publication_status == 'draft' %}selected{% endif %}>
+                Draft
+            </option>
+
+        </select>
+
+    {% endif %}
+
+    <button type="submit" class="action-button">
+        Apply Filters
+    </button>
+
+    <a href="{% url 'assignments:assignment_list' %}"
+       class="cancel-button">
+        Clear
+    </a>
+
+</form>
+
+<div class="assignment-summary">
+
+    <div>
+        <span class="summary-label">
+            {{ page_obj.paginator.count }} assignment{{ page_obj.paginator.count|pluralize }} found
+        </span>
+
+        <strong>
+            {{ page_obj.number }}/{{ page_obj.paginator.num_pages|default:1 }}
+        </strong>
+    </div>
+
+</div>
+
+{% if assignments %}
+
+    <div class="assignment-list">
+
+        {% for assignment in assignments %}
+
+            <article class="assignment-card">
+
+                <div class="assignment-card-header">
+
+                    <span class="assignment-subject">
+                        {{ assignment.subject.name }}
+                    </span>
+
+                    {% if assignment.is_published %}
+                        <span class="status-badge status-published">
+                            Published
+                        </span>
+                    {% else %}
+                        <span class="status-badge status-draft">
+                            Draft
+                        </span>
+                    {% endif %}
+
+                </div>
+
+                <h2>{{ assignment.title }}</h2>
+
+                <p class="assignment-description">
+                    {{ assignment.description|truncatewords:30 }}
+                </p>
+
+                <div class="assignment-meta">
+
+                    <span>
+                        Due: {{ assignment.due_date|date:"d M Y, H:i" }}
+                    </span>
+
+                    {% if request.user.role == 'STUDENT' %}
+                        <span>
+                            Teacher:
+                            {{ assignment.created_by.get_full_name|default:assignment.created_by.username }}
+                        </span>
+                    {% endif %}
+
+                </div>
+
+                <a href="{% url 'assignments:assignment_detail' assignment.pk %}"
+                   class="subject-card-link">
+                    View Assignment →
+                </a>
+
+            </article>
+
+        {% endfor %}
+
+    </div>
+
+    {% include 'partials/pagination.html' %}
+
+{% else %}
+
+    <div class="empty-state">
+
+        <h2>No assignments found</h2>
+
+        <p>
+            {% if search_query or selected_subject or publication_status %}
+                Try changing your search or filters.
+            {% elif request.user.role == 'TEACHER' %}
+                You haven't created any assignments yet.
+            {% else %}
+                There are no published assignments available yet.
+            {% endif %}
+        </p>
+
+    </div>
+
+{% endif %}
+
+{% endblock %}

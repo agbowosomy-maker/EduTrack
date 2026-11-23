@@ -1,0 +1,80 @@
+<aside class="sidebar">
+
+    <div class="sidebar-section">
+        <p class="sidebar-heading">WORKSPACE</p>
+
+        {% if request.user.role == 'STUDENT' %}
+
+            <a href="{% url 'dashboard:student_dashboard' %}"
+               class="sidebar-link">
+                <span class="sidebar-icon">▦</span>
+                Student Dashboard
+            </a>
+
+            <a href="{% url 'subjects:subject_list' %}"
+               class="sidebar-link">
+                <span class="sidebar-icon">▤</span>
+                My Subjects
+            </a>
+
+            <a href="{% url 'assignments:assignment_list' %}"
+               class="sidebar-link">
+                <span class="sidebar-icon">✎</span>
+                Assignments
+            </a>
+
+            <a href="{% url 'submissions:my_submissions' %}"
+               class="sidebar-link">
+                <span class="sidebar-icon">◈</span>
+                My Submissions
+            </a>
+
+        {% elif request.user.role == 'TEACHER' %}
+
+            <a href="{% url 'dashboard:teacher_dashboard' %}"
+               class="sidebar-link">
+                <span class="sidebar-icon">▦</span>
+                Teacher Dashboard
+            </a>
+
+            <a href="{% url 'subjects:subject_list' %}"
+               class="sidebar-link">
+                <span class="sidebar-icon">▤</span>
+                My Subjects
+            </a>
+
+            <a href="{% url 'subjects:subject_create' %}"
+               class="sidebar-link">
+                <span class="sidebar-icon">+</span>
+                Create Subject
+            </a>
+
+            <a href="{% url 'assignments:assignment_list' %}"
+               class="sidebar-link">
+                <span class="sidebar-icon">✎</span>
+                Assignments
+            </a>
+
+        {% endif %}
+    </div>
+
+    <div class="sidebar-section">
+        <p class="sidebar-heading">ACCOUNT</p>
+
+        <div class="sidebar-info">
+            <span class="sidebar-user">
+                {{ request.user.get_full_name|default:request.user.username }}
+            </span>
+
+            <span class="sidebar-role">
+                {{ request.user.get_role_display }}
+            </span>
+        </div>
+    </div>
+
+    <div class="sidebar-bottom">
+        <p>EduTrack Academic Platform</p>
+        <small>Learn. Track. Achieve.</small>
+    </div>
+
+</aside>

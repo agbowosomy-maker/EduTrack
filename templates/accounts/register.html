@@ -1,0 +1,33 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Register | EduTrack{% endblock %}
+
+{% block public_content %}
+
+<div class="auth-card">
+
+    <h1>Create your account</h1>
+
+    <p class="auth-description">
+        Register as a student to begin your learning journey.
+    </p>
+
+    <form method="POST" class="auth-form">
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button type="submit" class="primary-button">
+            Create Account
+        </button>
+    </form>
+
+    <p class="auth-footer">
+        Already have an account?
+        <a href="{% url 'accounts:login' %}">Log in</a>
+    </p>
+
+</div>
+
+{% endblock %}

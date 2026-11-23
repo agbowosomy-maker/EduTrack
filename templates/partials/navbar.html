@@ -1,0 +1,34 @@
+
+<header class="navbar">
+    <a href="{% if request.user.is_authenticated %}{% url 'accounts:role_redirect' %}{% else %}{% url 'accounts:login' %}{% endif %}" class="brand">
+        <span class="brand-icon">E</span>
+        <span>EduTrack</span>
+    </a>
+
+    <div class="navbar-right">
+        {% if request.user.is_authenticated %}
+            <span class="navbar-user">
+                {{ request.user.first_name|default:request.user.username }}
+            </span>
+
+            <span class="role-label">
+                {{ request.user.get_role_display }}
+            </span>
+
+            <form method="POST" action="{% url 'accounts:logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="logout-button">
+                    Logout
+                </button>
+            </form>
+        {% else %}
+            <a href="{% url 'accounts:login' %}" class="nav-link">
+                Login
+            </a>
+
+            <a href="{% url 'accounts:register' %}" class="nav-register">
+                Get Started
+            </a>
+        {% endif %}
+    </div>
+</header>

@@ -1,0 +1,45 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}EduTrack | Learning Management{% endblock %}</title>
+
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+    {% include 'partials/navbar.html' %}
+
+    {% if request.user.is_authenticated %}
+        <div class="app-layout">
+            {% include 'partials/sidebar.html' %}
+
+            <main class="main-content">
+                {% include 'partials/messages.html' %}
+
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    {% else %}
+        <main class="public-content">
+            {% include 'partials/messages.html' %}
+
+            {% block public_content %}{% endblock %}
+        </main>
+    {% endif %}
+
+    <footer class="site-footer">
+        <p>&copy; {% now "Y" %} EduTrack. All rights reserved.</p>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+
+</body>
+</html>

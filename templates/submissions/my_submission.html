@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}My Submissions | EduTrack{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-container">
+
+    <div class="page-heading">
+        <p class="dashboard-eyebrow">ACADEMIC ACTIVITY</p>
+        <h1>My Submissions</h1>
+        <p>Track your submitted assignments and teacher feedback.</p>
+    </div>
+
+    <section class="dashboard-section">
+
+        {% for submission in submissions %}
+
+            <article class="dashboard-list-item">
+
+                <div>
+                    <h3>
+                        <a href="{% url 'submissions:submission_detail' submission.pk %}">
+                            {{ submission.assignment.title }}
+                        </a>
+                    </h3>
+
+                    <p>{{ submission.assignment.subject.name }}</p>
+
+                    <p>
+                        Submitted:
+                        {{ submission.submitted_at|date:"d M Y, H:i" }}
+                    </p>
+                </div>
+
+                <div class="dashboard-item-meta">
+                    <strong>{{ submission.get_status_display }}</strong>
+
+                    {% if submission.grade != None %}
+                        <p>Grade: {{ submission.grade }}/100</p>
+                    {% endif %}
+                </div>
+
+            </article>
+
+        {% empty %}
+
+            <p class="empty-state">
+                You haven't submitted any assignments yet.
+            </p>
+
+        {% endfor %}
+
+    </section>
+
+</div>
+
+{% endblock %}

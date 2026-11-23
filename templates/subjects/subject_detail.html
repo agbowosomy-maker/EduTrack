@@ -1,0 +1,74 @@
+
+{% extends 'base.html' %}
+
+{% block title %}{{ subject.name }} | EduTrack{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <p class="page-eyebrow">SUBJECT DETAILS</p>
+
+    <h1>{{ subject.name }}</h1>
+
+    <p class="page-description">
+        Subject information and academic details.
+    </p>
+</div>
+
+<div class="detail-card">
+
+    <div class="detail-section">
+        <h2>About this subject</h2>
+
+        <p>
+            {{ subject.description|default:"No description has been provided."|linebreaksbr }}
+        </p>
+    </div>
+
+    <div class="detail-section">
+        <h2>Subject information</h2>
+
+        <div class="detail-row">
+            <span>Teacher</span>
+
+            <strong>
+                {{ subject.teacher.get_full_name|default:subject.teacher.username }}
+            </strong>
+        </div>
+
+        <div class="detail-row">
+            <span>Students enrolled</span>
+
+            <strong>{{ subject.students.count }}</strong>
+        </div>
+
+        <div class="detail-row">
+            <span>Date created</span>
+
+            <strong>{{ subject.created_at|date:"d M Y" }}</strong>
+        </div>
+    </div>
+
+    {% if request.user.role == 'TEACHER' %}
+        <div class="detail-actions">
+
+            <a href="{% url 'subjects:subject_update' subject.pk %}"
+               class="action-button">
+                Edit Subject
+            </a>
+
+            <a href="{% url 'subjects:subject_delete' subject.pk %}"
+               class="danger-button">
+                Delete Subject
+            </a>
+
+        </div>
+    {% endif %}
+
+</div>
+
+<a href="{% url 'subjects:subject_list' %}" class="back-link">
+    ← Back to Subjects
+</a>
+
+{% endblock %}

@@ -1,0 +1,45 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Delete Assignment | EduTrack{% endblock %}
+
+{% block content %}
+
+<div class="delete-card">
+
+    <p class="page-eyebrow">ASSIGNMENT MANAGEMENT</p>
+
+    <h1>Delete Assignment?</h1>
+
+    <p>
+        You are about to delete
+        <strong>{{ assignment.title }}</strong>.
+    </p>
+
+    <p class="delete-warning">
+        This action cannot be undone. Assignments with existing
+        student submissions cannot be deleted.
+    </p>
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        <div class="form-actions">
+
+            <button type="submit" class="danger-button">
+                Confirm Delete
+            </button>
+
+            <a href="{% url 'assignments:assignment_detail' assignment.pk %}"
+               class="cancel-button">
+                Cancel
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

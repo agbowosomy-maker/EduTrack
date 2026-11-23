@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}Submission Details | EduTrack{% endblock %}
+
+{% block content %}
+
+<div class="form-page-container">
+
+    <div class="page-heading">
+        <p class="dashboard-eyebrow">SUBMISSION DETAILS</p>
+        <h1>{{ submission.assignment.title }}</h1>
+        <p>{{ submission.assignment.subject.name }}</p>
+    </div>
+
+    <div class="submission-form-card">
+
+        <div class="submission-information">
+            <div>
+                <span>Student</span>
+                <strong>{{ submission.student.get_full_name|default:submission.student.username }}</strong>
+            </div>
+
+            <div>
+                <span>Submitted</span>
+                <strong>{{ submission.submitted_at|date:"d M Y, H:i" }}</strong>
+            </div>
+
+            <div>
+                <span>Last Updated</span>
+                <strong>{{ submission.updated_at|date:"d M Y, H:i" }}</strong>
+            </div>
+
+            <div>
+                <span>Status</span>
+                <strong>{{ submission.get_status_display }}</strong>
+            </div>
+        </div>
+
+        <hr>
+
+        <h2>Written Answer</h2>
+
+        {% if submission.content %}
+            <div class="submission-content">
+                {{ submission.content|linebreaks }}
+            </div>
+        {% else %}
+            <p>No written answer was provided.</p>
+        {% endif %}
+
+        <hr>
+
+        <h2>Attached File</h2>
+
+        {% if submission.file %}
+            <a href="{% url 'submissions:submission_download' submission.pk %}"
+               class="action-button">
+                Download Submitted File
+            </a>
+        {% else %}
+            <p>No file was attached.</p>
+        {% endif %}
+
+        {% if submission.grade != None or submission.feedback %}
+            <hr>
+
+            <h2>Teacher Feedback</h2>
+
+            {% if submission.grade != None %}
+                <p><strong>Grade:</strong> {{ submission.grade }} / 100</p>
+            {% endif %}
+
+            {% if submission.feedback %}
+                <div class="submission-content">
+                    {{ submission.feedback|linebreaks }}
+                </div>
+            {% endif %}
+        {% endif %}
+
+        {% if request.user.role == 'TEACHER' %}
+            <div class="form-actions">
+                <a
+                    href="{% url 'submissions:submission_grade' submission.pk %}"
+                    class="btn btn-primary"
+                >
+                    Review and Grade
+                </a>
+            </div>
+        {% endif %}
+
+        {% if request.user.role == 'STUDENT' and submission.status != 'REVIEWED' %}
+            {% if submission.assignment.due_date > now %}
+                <div class="form-actions">
+                    <a href="{% url 'submissions:submission_update' submission.pk %}"
+                       class="action-button">
+                        Edit Submission
+                    </a>
+                </div>
+            {% endif %}
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

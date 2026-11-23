@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Dashboard | EduTrack{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-container">
+
+    <section class="dashboard-welcome">
+        <div>
+            <p class="dashboard-eyebrow">STUDENT OVERVIEW</p>
+            <h1>Welcome back, {{ request.user.first_name|default:request.user.username }}.</h1>
+            <p>Here's an overview of your learning activity and assignments.</p>
+        </div>
+    </section>
+
+    <section class="dashboard-statistics">
+
+        <article class="stat-card">
+            <p>Enrolled Subjects</p>
+            <h2>{{ subject_count }}</h2>
+        </article>
+
+        <article class="stat-card">
+            <p>Available Assignments</p>
+            <h2>{{ total_assignments }}</h2>
+        </article>
+
+        <article class="stat-card">
+            <p>Submitted Assignments</p>
+            <h2>{{ submitted_count }}</h2>
+        </article>
+
+        <article class="stat-card">
+            <p>Pending Assignments</p>
+            <h2>{{ pending_count }}</h2>
+        </article>
+
+        <article class="stat-card">
+            <p>Reviewed Assignments</p>
+            <h2>{{ reviewed_count }}</h2>
+        </article>
+
+    </section>
+
+    <section class="dashboard-progress">
+        <div class="section-heading">
+            <div>
+                <h2>Assignment Progress</h2>
+                <p>Your submission progress across available assignments.</p>
+            </div>
+
+            <strong>{{ progress_percentage }}%</strong>
+        </div>
+
+        <div class="progress-track">
+            <div
+                class="progress-fill"
+                style="width: {{ progress_percentage }}%;"
+            ></div>
+        </div>
+
+        <p>{{ submitted_count }} of {{ total_assignments }} assignments submitted</p>
+    </section>
+
+    <section class="dashboard-section">
+        <div class="section-heading">
+            <div>
+                <h2>Upcoming Deadlines</h2>
+                <p>Assignments you still need to submit.</p>
+            </div>
+
+            <a href="{% url 'assignments:assignment_list' %}">
+                View all assignments
+            </a>
+        </div>
+
+        {% for assignment in upcoming_assignments %}
+            <article class="dashboard-list-item">
+                <div>
+                    <h3>
+                        <a href="{% url 'assignments:assignment_detail' assignment.pk %}">
+                            {{ assignment.title }}
+                        </a>
+                    </h3>
+                    <p>{{ assignment.subject.name }}</p>
+                </div>
+
+                <div class="dashboard-item-meta">
+                    <span>Due: {{ assignment.due_date|date:"d M Y, H:i" }}</span>
+                </div>
+            </article>
+        {% empty %}
+            <p class="empty-state">You have no upcoming pending deadlines.</p>
+        {% endfor %}
+    </section>
+
+    <section class="dashboard-section">
+        <div class="section-heading">
+            <div>
+                <h2>Recently Published Assignments</h2>
+                <p>New learning tasks from your teachers.</p>
+            </div>
+        </div>
+
+        {% for assignment in recent_assignments %}
+            <article class="dashboard-list-item">
+                <div>
+                    <h3>
+                        <a href="{% url 'assignments:assignment_detail' assignment.pk %}">
+                            {{ assignment.title }}
+                        </a>
+                    </h3>
+                    <p>{{ assignment.subject.name }}</p>
+                </div>
+
+                <div class="dashboard-item-meta">
+                    <span>{{ assignment.created_at|date:"d M Y" }}</span>
+                </div>
+            </article>
+        {% empty %}
+            <p class="empty-state">No assignments have been published yet.</p>
+        {% endfor %}
+    </section>
+
+</div>
+
+{% endblock %}

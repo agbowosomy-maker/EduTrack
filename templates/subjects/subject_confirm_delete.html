@@ -1,0 +1,43 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Delete Subject | EduTrack{% endblock %}
+
+{% block content %}
+
+<div class="delete-card">
+
+    <p class="page-eyebrow">SUBJECT MANAGEMENT</p>
+
+    <h1>Delete Subject?</h1>
+
+    <p>
+        You are about to delete
+        <strong>{{ subject.name }}</strong>.
+    </p>
+
+    <p class="delete-warning">
+        This action cannot be undone. Subjects with existing assignments
+        cannot be deleted.
+    </p>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="form-actions">
+
+            <button type="submit" class="danger-button">
+                Confirm Delete
+            </button>
+
+            <a href="{% url 'subjects:subject_detail' subject.pk %}"
+               class="cancel-button">
+                Cancel
+            </a>
+
+        </div>
+    </form>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block title %}Teacher Dashboard | EduTrack{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-container">
+
+    <section class="dashboard-welcome">
+        <div>
+            <p class="dashboard-eyebrow">TEACHER OVERVIEW</p>
+
+            <h1>
+                Welcome back,
+                {{ request.user.first_name|default:request.user.username }}.
+            </h1>
+
+            <p>
+                Monitor your subjects, assignments and student submissions.
+            </p>
+        </div>
+    </section>
+
+    <section class="dashboard-statistics">
+
+        <article class="stat-card">
+            <p>My Subjects</p>
+            <h2>{{ subject_count }}</h2>
+        </article>
+
+        <article class="stat-card">
+            <p>My Assignments</p>
+            <h2>{{ assignment_count }}</h2>
+        </article>
+
+        <article class="stat-card">
+            <p>Total Submissions</p>
+            <h2>{{ submission_count }}</h2>
+        </article>
+
+        <article class="stat-card">
+            <p>Awaiting Review</p>
+            <h2>{{ pending_review_count }}</h2>
+        </article>
+
+        <article class="stat-card">
+            <p>Reviewed</p>
+            <h2>{{ reviewed_count }}</h2>
+        </article>
+
+        <article class="stat-card">
+            <p>Revision Requested</p>
+            <h2>{{ revision_count }}</h2>
+        </article>
+
+    </section>
+
+    <section class="dashboard-section">
+
+        <div class="section-heading">
+            <div>
+                <h2>Recent Submissions</h2>
+                <p>Recently submitted work from your students.</p>
+            </div>
+        </div>
+
+        {% for submission in recent_submissions %}
+
+            <article class="dashboard-list-item">
+
+                <div>
+                    <h3>
+                        <a href="{% url 'submissions:submission_detail' submission.pk %}">
+                            {{ submission.assignment.title }}
+                        </a>
+                    </h3>
+
+                    <p>
+                        {{ submission.student.get_full_name|default:submission.student.username }}
+                        ·
+                        {{ submission.assignment.subject.name }}
+                    </p>
+
+                </div>
+
+                <div class="dashboard-item-meta">
+                    <strong>{{ submission.get_status_display }}</strong>
+
+                    <p>
+                        {{ submission.submitted_at|date:"d M Y, H:i" }}
+                    </p>
+                </div>
+
+            </article>
+
+        {% empty %}
+
+            <p class="empty-state">
+                No student submissions have been received yet.
+            </p>
+
+        {% endfor %}
+
+    </section>
+
+    <section class="dashboard-section">
+
+        <div class="section-heading">
+            <div>
+                <h2>My Subjects</h2>
+                <p>Subjects currently managed by you.</p>
+            </div>
+
+            <a href="{% url 'subjects:subject_list' %}">
+                View all subjects
+            </a>
+        </div>
+
+        {% for subject in teacher_subjects %}
+
+            <article class="dashboard-list-item">
+                <div>
+                    <h3>
+                        <a href="{% url 'subjects:subject_detail' subject.pk %}">
+                            {{ subject.name }}
+                        </a>
+                    </h3>
+
+                    <p>{{ subject.students.count }} enrolled students</p>
+                </div>
+            </article>
+
+        {% empty %}
+
+            <p class="empty-state">
+                You have not created any subjects yet.
+            </p>
+
+        {% endfor %}
+
+    </section>
+
+</div>
+
+{% endblock %}
